@@ -1,0 +1,32 @@
+graphite: 
+  image: hopsoft/graphite-statsd
+  volumes:
+    - ./graphite/config/storage-schemas.conf:/opt/graphite/conf/storage-schemas.conf
+  ports:
+    - "80:80"
+    - "2003:2003"
+    - "8125:8125/udp"
+    - "8126:8126"
+logstash:
+  image: logstash:latest
+  command: logstash -f /etc/logstash/conf.d/logstash.conf
+  volumes:
+    - ./logstash/config:/etc/logstash/conf.d
+  ports:
+    - "5000:5000"
+  links:
+    - graphite
+grafana:
+  image: grafana/grafana
+  ports:
+    - "3000:3000"
+  environment:
+    - GF_SECURITY_ADMIN_USER=admin
+    - GF_AUTH_GOOGLE_CLIENT_SECRET=admin 
+    - ELASTICSEARCH_PROTO=http 
+    - GRAPHITE_HOST=graphite 
+    - GRAPHITE_PORT=80
+  links:
+    - graphite
+    
+    

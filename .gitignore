@@ -1,0 +1,5 @@
+./apachelog_monitor_app/src/main/resources/access*
+apachelog_monitor_app/.classpath
+apachelog_monitor_app/.project
+apachelog_monitor_app/.settings
+apachelog_monitor_app/target
