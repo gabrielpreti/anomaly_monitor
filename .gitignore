@@ -1,4 +1,4 @@
-./apachelog_monitor_app/src/main/resources/access*
+apachelog_monitor_app/src/main/resources/access_pagseguro.uol.com.br_443.log
 apachelog_monitor_app/.classpath
 apachelog_monitor_app/.project
 apachelog_monitor_app/.settings
