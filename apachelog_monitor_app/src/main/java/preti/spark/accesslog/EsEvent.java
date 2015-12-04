@@ -17,12 +17,13 @@ public class EsEvent implements Serializable {
 	private double historicalSd;
 	private double currentSd;
 	private double score;
+	private double scoreStatistic;
 	private double value;
 	private boolean alarm;
 	private String bucket;
 
 	public EsEvent(String endpointResponseCode, double value, double historicalMean, double currentMean,
-			double historicalSd, double currentSd, double score, boolean alarm, String bucket) {
+			double historicalSd, double currentSd, double score, double scoreStatistic, boolean alarm, String bucket) {
 		super();
 		this.value = value;
 		this.endpointResponseCode = endpointResponseCode;
@@ -31,6 +32,7 @@ public class EsEvent implements Serializable {
 		this.historicalSd = historicalSd;
 		this.currentSd = currentSd;
 		this.score = score;
+		this.scoreStatistic = scoreStatistic;
 		this.alarm = alarm;
 		this.bucket = bucket;
 	}
@@ -79,6 +81,10 @@ public class EsEvent implements Serializable {
 		return score;
 	}
 
+	public double getScoreStatistic() {
+		return scoreStatistic;
+	}
+
 	public void setScore(double score) {
 		this.score = score;
 	}
@@ -125,7 +131,8 @@ public class EsEvent implements Serializable {
 			events.add(new EsEvent(analysisResult.getEndpointResponseCode(), analysisResult.getValues()[i],
 					analysisResult.getHistoricalMeans()[i], analysisResult.getCurrentMeans()[i],
 					analysisResult.getHistoricalSds()[i], analysisResult.getCurrentSds()[i],
-					analysisResult.getScores()[i], analysisResult.getAlarms()[i], analysisResult.getBuckets()[i]));
+					analysisResult.getScores()[i], analysisResult.getScoreStatistics()[i],
+					analysisResult.getAlarms()[i], analysisResult.getBuckets()[i]));
 		}
 
 		return events;

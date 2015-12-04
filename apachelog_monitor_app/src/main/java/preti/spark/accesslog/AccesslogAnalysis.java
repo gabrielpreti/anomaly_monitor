@@ -22,9 +22,7 @@ import scala.Tuple2;
 
 public class AccesslogAnalysis {
 	private static final Log log = LogFactory.getLog(AccesslogAnalysis.class);
-	// private static final int WINDOW_SIZE = 30;
 	private static final int WINDOW_SIZE = 60;
-	// private static final int DELAY = 5;
 	private static final int DELAY = 10;
 	private static final int TRAINING_SIZE = 60;
 	private static final double THRESOLD_REL_SD_MEAN = 0.3;
@@ -82,6 +80,7 @@ public class AccesslogAnalysis {
 					double[] historicalSds = new double[bucketsList.size()];
 					double[] currentSds = new double[bucketsList.size()];
 					double[] scores = new double[bucketsList.size()];
+					double[] scoresStatistics = new double[bucketsList.size()];
 					boolean[] alarms = new boolean[bucketsList.size()];
 					double[] values = new double[bucketsList.size()];
 
@@ -115,24 +114,18 @@ public class AccesslogAnalysis {
 						}
 
 						if (currentIndex > (WINDOW_SIZE + DELAY)) {
-							// double historicalMean =
-							// historicalStatistics.getMedian();
-							double historicalMean = historicalStatistics.getMean();
+							 double historicalMean =
+							 historicalStatistics.getMean();
 							historicalMeans[currentIndex] = historicalMean;
-							// double historicalSd =
-							// historicalStatistics.getMad();
-							double historicalSd = historicalStatistics.getStandardDeviation();
+							 double historicalSd =
+							 historicalStatistics.getStandardDeviation();
 							historicalSds[currentIndex] = historicalSd;
 							if (historicalMean == 0 && historicalSd == 0) {
 								continue;
 							}
 
-							// double currentMean =
-							// currentStatistics.getMedian();
-							double currentMean = currentStatistics.getMean();
+							 double currentMean = currentStatistics.getMean();
 							currentMeans[currentIndex] = currentMean;
-							// currentSds[currentIndex] =
-							// currentStatistics.getMad();
 							currentSds[currentIndex] = currentStatistics.getStandardDeviation();
 							double difference = Math.abs(currentMean - historicalMean);
 							double scoreHistoricalSd = difference / historicalSd;
@@ -151,14 +144,15 @@ public class AccesslogAnalysis {
 								alarms[currentIndex] = true;
 							} else {
 								scoreStatistics.addValue(scoreHistoricalSd);
+								scoresStatistics[currentIndex]=scoreHistoricalSd;
 							}
 
 						}
 					}
 					return new Tuple2<>(endpointResponseCode,
 							new EndpointResponseCodeAnalysisResult(endpointResponseCode, values, historicalMeans,
-									currentMeans, historicalSds, currentSds, scores, alarms,
-									bucketsList.toArray(new String[] {})));
+									currentMeans, historicalSds, currentSds, scores, scoresStatistics,
+									alarms, bucketsList.toArray(new String[] {})));
 				});
 
 		// analysisResults = analysisResults.filter(result ->

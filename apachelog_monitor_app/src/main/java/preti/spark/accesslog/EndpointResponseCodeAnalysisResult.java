@@ -12,12 +12,13 @@ public class EndpointResponseCodeAnalysisResult implements Serializable {
 	private double[] historicalSds;
 	private double[] currentSds;
 	private double[] scores;
+	private double[] scoreStatistics;
 	private boolean[] alarms;
 	private double[] values;
 	private String[] buckets;
 
 	public EndpointResponseCodeAnalysisResult(String endpointResponseCode, double[] values, double[] historicalMeans,
-			double[] currentMeans, double[] historicalSds, double[] currentSds, double[] scores, boolean[] alarms,
+			double[] currentMeans, double[] historicalSds, double[] currentSds, double[] scores, double[] scoreStatistics, boolean[] alarms,
 			String[] buckets) {
 		super();
 		this.values = values;
@@ -27,6 +28,7 @@ public class EndpointResponseCodeAnalysisResult implements Serializable {
 		this.historicalSds = historicalSds;
 		this.currentSds = currentSds;
 		this.scores = scores;
+		this.scoreStatistics = scoreStatistics;
 		this.alarms = alarms;
 		this.buckets = buckets;
 	}
@@ -53,6 +55,10 @@ public class EndpointResponseCodeAnalysisResult implements Serializable {
 
 	public double[] getScores() {
 		return scores;
+	}
+	
+	public double[] getScoreStatistics() {
+		return scoreStatistics;
 	}
 
 	public boolean[] getAlarms() {
