@@ -1,10 +1,10 @@
 package preti.spark.accesslog;
 
-import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math.stat.descriptive.SynchronizedDescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 
 @SuppressWarnings("serial")
-public class CustomDescriptiveStatistics extends DescriptiveStatistics {
+public class CustomDescriptiveStatistics extends SynchronizedDescriptiveStatistics {
 
 	public CustomDescriptiveStatistics() {
 		super();

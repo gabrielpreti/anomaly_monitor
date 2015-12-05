@@ -44,7 +44,7 @@ public class AccesslogAnalysis {
 		JavaRDD<String> logLines = sc.textFile(logFile).filter(ApacheAccessLog::filter);
 
 		JavaRDD<ApacheAccessLog> events = logLines.map(ApacheAccessLog::parseFromLogLine);
-		events = events.filter(e -> e.getEndpointResponseCode().contains("/pagseguro.uol.com.br/_200"));
+//		events = events.filter(e -> e.getEndpointResponseCode().contains("/pagseguro.uol.com.br/_200"));
 
 		List<String> bucketsList = events.mapToPair(event -> new Tuple2<>(event.getBucketId(), event)).groupByKey()
 				.sortByKey(true).keys().collect();
@@ -86,7 +86,7 @@ public class AccesslogAnalysis {
 
 					CustomDescriptiveStatistics historicalStatistics = new CustomDescriptiveStatistics(WINDOW_SIZE);
 					CustomDescriptiveStatistics currentStatistics = new CustomDescriptiveStatistics(DELAY);
-					CustomDescriptiveStatistics scoreStatistics = new CustomDescriptiveStatistics();
+					CustomDescriptiveStatistics scoreStatistics = new CustomDescriptiveStatistics(4*WINDOW_SIZE);
 
 					for (int currentIndex = 0; currentIndex < bucketsList.size(); currentIndex++) {
 						String bucket = bucketsList.get(currentIndex);
@@ -117,8 +117,7 @@ public class AccesslogAnalysis {
 							 double historicalMean =
 							 historicalStatistics.getMean();
 							historicalMeans[currentIndex] = historicalMean;
-							 double historicalSd =
-							 historicalStatistics.getStandardDeviation();
+							double historicalSd = historicalStatistics.getStandardDeviation();
 							historicalSds[currentIndex] = historicalSd;
 							if (historicalMean == 0 && historicalSd == 0) {
 								continue;
@@ -149,14 +148,14 @@ public class AccesslogAnalysis {
 
 						}
 					}
+
 					return new Tuple2<>(endpointResponseCode,
 							new EndpointResponseCodeAnalysisResult(endpointResponseCode, values, historicalMeans,
 									currentMeans, historicalSds, currentSds, scores, scoresStatistics,
 									alarms, bucketsList.toArray(new String[] {})));
 				});
 
-		// analysisResults = analysisResults.filter(result ->
-		// result._2().hasAlarm());
+		analysisResults = analysisResults.filter(result -> result._2().hasAlarm());
 		JavaPairRDD<String, EsEvent> esEvents = analysisResults.flatMapValues(analysisResult -> {
 			return EsEvent.fromEndpointResponseCodeAnalysisResult(analysisResult);
 		});
@@ -188,5 +187,20 @@ public class AccesslogAnalysis {
 		// JavaEsSpark.saveToEs(esEvents.values(), "spark/docs");
 		// bucketsMetrics.saveAsTextFile("/tmp/output");
 		sc.close();
+	}
+	
+	public static void main2(String[] args){
+		CustomDescriptiveStatistics stat = new CustomDescriptiveStatistics(10);
+		stat.addValue(50);
+		for(int i = 1; i<20; i++){
+			stat.addValue(i);
+			System.out.println("Max: " + stat.getMax());
+		}
+		
+		
+		for(double v : stat.getValues()){
+			System.out.println(v);
+		}
+		
 	}
 }
