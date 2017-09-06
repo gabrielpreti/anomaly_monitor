@@ -14,6 +14,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.storage.StorageLevel;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -45,6 +46,7 @@ public class AccesslogAnalysis {
 
 		JavaRDD<ApacheAccessLog> events = logLines.map(ApacheAccessLog::parseFromLogLine);
 //		events = events.filter(e -> e.getEndpointResponseCode().contains("/pagseguro.uol.com.br/_200"));
+		events.persist(StorageLevel.MEMORY_ONLY());
 
 		List<String> bucketsList = events.mapToPair(event -> new Tuple2<>(event.getBucketId(), event)).groupByKey()
 				.sortByKey(true).keys().collect();
